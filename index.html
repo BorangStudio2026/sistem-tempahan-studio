@@ -13,11 +13,11 @@
             --bg-gradient: linear-gradient(135deg, #003366 0%, #001a33 100%);
             --card-bg: #ffffff;
             --danger: #e53e3e; 
+            --success: #38a169;
         }
 
         body { font-family: 'Inter', sans-serif; margin: 0; padding: 0; background: #f0f2f5; min-height: 100vh; }
 
-        /* HEADER & BACKGROUND */
         .main-wrapper {
             background: var(--bg-gradient);
             padding: 60px 20px 160px 20px;
@@ -33,14 +33,12 @@
         .hubungi-pantas span { margin: 0 10px; border-right: 1px solid rgba(255,255,255,0.3); padding-right: 10px; }
         .hubungi-pantas span:last-child { border: none; }
 
-        /* CONTAINER BORANG */
         .container { 
             max-width: 850px; background: var(--card-bg); padding: 50px; border-radius: 20px; 
             margin: -100px auto 50px auto; box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25); 
             position: relative; z-index: 10;
         }
 
-        /* LIVE STATUS ALERT */
         .live-status-box {
             background: #fff; border: 2px solid var(--accent-color); border-radius: 12px;
             padding: 20px; margin-bottom: 30px; text-align: left;
@@ -55,7 +53,6 @@
             font-size: 0.75rem; color: #475569; font-weight: 600;
         }
 
-        /* STYLES BORANG */
         .section-title { 
             display: flex; align-items: center; font-size: 1.1rem; font-weight: 800; 
             color: var(--primary-color); margin: 35px 0 20px; text-transform: uppercase; 
@@ -75,13 +72,12 @@
         .logistic-box { background: #f1f5f9; padding: 25px; border-radius: 15px; border: 1px solid #cbd5e1; }
         .date-row { 
             display: flex; gap: 15px; background: white; padding: 15px; 
-            border-radius: 12px; margin-bottom: 20px; border: 1px solid #e2e8f0;
+            border-radius: 12px; margin-bottom: 10px; border: 1px solid #e2e8f0;
         }
         .date-input-group { flex: 1; }
         .date-input-group label { font-size: 0.7rem; color: #64748b; text-transform: uppercase; }
         .date-input-group input { border: none; background: transparent; font-weight: 700; width: 100%; outline: none; }
 
-        /* SYARAT & DENDA */
         .syarat-box { background: #fffaf0; border: 1px solid #feebc8; padding: 25px; border-radius: 15px; margin-top: 35px; text-align: left; }
         .syarat-box li { margin-bottom: 10px; font-size: 0.9rem; color: #4a5568; line-height: 1.5; }
         .amaran-denda { 
@@ -94,11 +90,11 @@
             border-radius: 12px; width: 100%; font-size: 1.2rem; font-weight: 800; cursor: pointer; 
             margin: 35px 0; text-transform: uppercase; transition: 0.3s;
         }
-        button:hover { background: #002244; transform: translateY(-2px); box-shadow: 0 10px 15px rgba(0,0,0,0.2); }
-        button:disabled { background: #cbd5e1; cursor: not-allowed; }
+        button:hover:not(:disabled) { background: #002244; transform: translateY(-2px); box-shadow: 0 10px 15px rgba(0,0,0,0.2); }
+        button:disabled { background: #cbd5e1; cursor: not-allowed; opacity: 0.7; }
 
         .footer-info { text-align: center; padding-bottom: 60px; color: #718096; font-size: 0.85rem; }
-        .error-msg { color: var(--danger); font-size: 0.75rem; font-weight: 700; display: none; margin-top: 8px; }
+        .error-msg { color: var(--danger); font-size: 0.75rem; font-weight: 700; display: none; margin-top: 5px; margin-bottom: 10px; }
     </style>
 </head>
 <body>
@@ -116,7 +112,7 @@
 
 <div class="container">
     <div class="live-status-box">
-        <div class="live-status-title">SLOT TERISI (ALERT)</div>
+        <div class="live-status-title">STATUS STUDIO (LULUS)</div>
         <div id="occupiedSlots" class="booking-tag-container">
             <span style="font-size: 0.8rem; color: #94a3b8;">Memuatkan status studio...</span>
         </div>
@@ -126,7 +122,10 @@
         <div class="section-title">1. Maklumat Peribadi</div>
         <div class="form-grid">
             <div class="full-width"><label>Nama Penuh</label><input type="text" name="nama" placeholder="Sila masukkan nama penuh" required></div>
-            <div><label>No. Kad Pengenalan</label><input type="text" name="no_ic" maxlength="12" placeholder="Cth: 010203030501" required></div>
+            <div>
+                <label>No. Kad Pengenalan</label>
+                <input type="text" name="no_ic" maxlength="12" pattern="\d*" inputmode="numeric" placeholder="Cth: 010203030501" title="Sila masukkan 12 digit nombor sahaja" required>
+            </div>
             <div><label>No. Matrik / No. Staf</label><input type="text" name="no_id" required></div>
             <div><label>Alamat Emel Peribadi</label><input type="email" name="email" placeholder="Cth: ali@siswa.umk.edu.my" required></div>
             <div><label>No. Telefon / WhatsApp</label><input type="tel" name="phone" placeholder="Cth: 0123456789" required></div>
@@ -158,6 +157,7 @@
                 <div class="date-input-group"><label>Tarikh Tamat</label><input type="date" id="tarikh_tamat" name="tarikh_tamat" required></div>
             </div>
             <div id="dateError" class="error-msg">Had tempahan maksimum adalah 3 hari sahaja!</div>
+            
             <div class="form-grid">
                 <div><label>Masa Mula</label>
                     <select id="masa_mula" name="masa_mula" required>
@@ -184,6 +184,7 @@
                     </select>
                 </div>
             </div>
+            <div id="timeError" class="error-msg" style="margin-top:10px">Masa tamat mestilah selepas masa mula!</div>
         </div>
 
         <div class="full-width" style="margin-top:25px"><label>Keperluan Teknikal / Catatan</label><textarea name="teknikal" rows="3" placeholder="Contoh: PA Sistem, Kostum, Mikrofon..."></textarea></div>
@@ -193,8 +194,7 @@
             <ul>
                 <li>Permohonan mestilah dibuat sekurang-kurangnya <strong>3 HARI</strong> sebelum tarikh penggunaan.</li>
                 <li>Tempahan maksimum hanya <strong>3 HARI</strong> berturut-turut sahaja dibenarkan.</li>
-                <li>Pemohon bertanggungjawab sepenuhnya terhadap kebersihan dan keselamatan peralatan di dalam studio.</li>
-                <li>Penggunaan studio mestilah mengikut slot masa yang telah diluluskan sahaja.</li>
+                <li>Pemohon bertanggungjawab sepenuhnya terhadap kebersihan dan keselamatan peralatan.</li>
                 <li>Pihak pengurusan berhak membatalkan tempahan sekiranya terdapat aktiviti rasmi universiti.</li>
             </ul>
             <div class="amaran-denda">PEMOHON HENDAKLAH MEMBAYAR DENDA TERHADAP SEBARANG KEROSAKAN ATAU KEHILANGAN PERALATAN.</div>
@@ -210,6 +210,7 @@
 </div>
 
 <script>
+    // KONFIGURASI SUPABASE
     const supabaseUrl = 'https://lweolipmulciepadidvk.supabase.co';
     const supabaseKey = 'sb_publishable_V-12ORVq7uTmuKk9X8PPnQ_hcm_J2c2';
     const _supabase = supabase.createClient(supabaseUrl, supabaseKey);
@@ -220,58 +221,174 @@
         jeli: ["Studio Kebudayaan"] 
     };
 
-    // LOAD SLOT TERISI
+    // 1. SET MINIMUM DATE (3 HARI DARI SEKARANG)
+    function setMinDates() {
+        const today = new Date();
+        const minLeadTime = new Date();
+        minLeadTime.setDate(today.getDate() + 3);
+        const minDateStr = minLeadTime.toISOString().split('T')[0];
+        
+        document.getElementById('tarikh_mula').setAttribute('min', minDateStr);
+        document.getElementById('tarikh_tamat').setAttribute('min', minDateStr);
+    }
+
+    // 2. LOAD SLOT TERISI (STATUS LULUS SAHAJA)
     async function loadOccupiedSlots() {
         const container = document.getElementById('occupiedSlots');
         const today = new Date().toISOString().split('T')[0];
-        const { data } = await _supabase.from('bookings').select('studio_name, start_date, end_date').eq('status', 'Lulus').gte('end_date', today);
         
-        if (data && data.length > 0) {
-            container.innerHTML = '';
-            data.forEach(b => {
-                const tag = document.createElement('span'); tag.className = 'booking-tag';
-                tag.innerText = `${b.studio_name} (${b.start_date} hingga ${b.end_date})`;
-                container.appendChild(tag);
-            });
-        } else { container.innerHTML = '<span style="font-size: 0.8rem; color: #94a3b8;">Tiada tempahan aktif buat masa ini.</span>'; }
+        try {
+            const { data, error } = await _supabase
+                .from('bookings')
+                .select('studio_name, start_date, end_date')
+                .eq('status', 'Lulus')
+                .gte('end_date', today);
+            
+            if (error) throw error;
+
+            if (data && data.length > 0) {
+                container.innerHTML = '';
+                data.forEach(b => {
+                    const tag = document.createElement('span'); 
+                    tag.className = 'booking-tag';
+                    tag.innerText = `${b.studio_name} (${b.start_date} hingga ${b.end_date})`;
+                    container.appendChild(tag);
+                });
+            } else {
+                container.innerHTML = '<span style="font-size: 0.8rem; color: #94a3b8;">Tiada tempahan aktif buat masa ini.</span>';
+            }
+        } catch (err) {
+            container.innerHTML = '<span style="font-size: 0.8rem; color: #e53e3e;">Gagal memuatkan status.</span>';
+        }
     }
 
-    // UPDATE STUDIO DROP DOWN
+    // 3. UPDATE STUDIO DROP DOWN
     document.getElementById("kampus").addEventListener("change", function() {
-        const s = document.getElementById("studio"); s.innerHTML = '<option value="">-- Pilih Studio --</option>';
+        const s = document.getElementById("studio"); 
+        s.innerHTML = '<option value="">-- Pilih Studio --</option>';
         if(this.value && studioData[this.value]) {
-            studioData[this.value].forEach(i => { let o = document.createElement("option"); o.value = i; o.text = i; s.add(o); });
+            studioData[this.value].forEach(i => { 
+                let o = document.createElement("option"); 
+                o.value = i; o.text = i; s.add(o); 
+            });
         }
     });
 
-    // VALIDASI TARIKH (MAKS 3 HARI)
-    const tMula = document.getElementById("tarikh_mula"), tTamat = document.getElementById("tarikh_tamat"), dateErr = document.getElementById("dateError"), submitBtn = document.getElementById("submitBtn");
-    function validateDates() {
-        if(tMula.value && tTamat.value) {
-            const diff = ((new Date(tTamat.value) - new Date(tMula.value)) / 86400000) + 1;
-            if(diff > 3 || diff < 1) { dateErr.style.display="block"; submitBtn.disabled=true; }
-            else { dateErr.style.display="none"; submitBtn.disabled=false; }
-        }
-    }
-    tMula.onchange = validateDates; tTamat.onchange = validateDates;
+    // 4. VALIDASI TARIKH & MASA
+    const tMula = document.getElementById("tarikh_mula"), 
+          tTamat = document.getElementById("tarikh_tamat"), 
+          mMula = document.getElementById("masa_mula"),
+          mTamat = document.getElementById("masa_tamat"),
+          dateErr = document.getElementById("dateError"), 
+          timeErr = document.getElementById("timeError"),
+          submitBtn = document.getElementById("submitBtn");
 
-    // HANTAR DATA KE SUPABASE
+    function validateInputs() {
+        let isDateValid = false;
+        let isTimeValid = false;
+
+        // Validasi Tarikh
+        if(tMula.value && tTamat.value) {
+            const start = new Date(tMula.value);
+            const end = new Date(tTamat.value);
+            const diffTime = end - start;
+            const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24)) + 1;
+
+            if (end < start) {
+                dateErr.innerText = "Tarikh tamat tidak boleh sebelum tarikh mula!";
+                dateErr.style.display = "block";
+            } else if (diffDays > 3) {
+                dateErr.innerText = "Had tempahan maksimum adalah 3 hari sahaja!";
+                dateErr.style.display = "block";
+            } else {
+                dateErr.style.display = "none";
+                isDateValid = true;
+            }
+        }
+
+        // Validasi Masa (Jika hari sama)
+        if(mMula.value && mTamat.value) {
+            if(tMula.value === tTamat.value) {
+                if(mTamat.value <= mMula.value) {
+                    timeErr.style.display = "block";
+                } else {
+                    timeErr.style.display = "none";
+                    isTimeValid = true;
+                }
+            } else {
+                timeErr.style.display = "none";
+                isTimeValid = true;
+            }
+        }
+
+        submitBtn.disabled = !(isDateValid && isTimeValid);
+    }
+
+    [tMula, tTamat, mMula, mTamat].forEach(el => el.addEventListener('change', validateInputs));
+
+    // 5. HANTAR DATA KE SUPABASE
     document.getElementById("bookingForm").onsubmit = async function(e) {
         e.preventDefault();
-        submitBtn.innerText = "MENGHANTAR PERMOHONAN..."; submitBtn.disabled = true;
+        
+        // 1. Semakan pertindihan saat akhir (Security check)
+        submitBtn.innerText = "MENYEMAK KEKOSONGAN...";
+        submitBtn.disabled = true;
+
         const f = new FormData(this);
+        const studio = f.get("studio");
+        const sDate = f.get("tarikh_mula");
+        const eDate = f.get("tarikh_tamat");
+
+        // Semak jika ada tempahan lulus yang bertindih dengan tarikh dipilih
+        const { data: overlap } = await _supabase
+            .from('bookings')
+            .select('id')
+            .eq('studio_name', studio)
+            .eq('status', 'Lulus')
+            .or(`start_date.lte.${eDate},end_date.gte.${sDate}`);
+
+        if (overlap && overlap.length > 0) {
+            alert("MAAF! Studio ini telah ditempah oleh orang lain pada tarikh tersebut. Sila pilih tarikh atau studio lain.");
+            submitBtn.innerText = "Hantar Permohonan";
+            submitBtn.disabled = false;
+            return;
+        }
+
+        submitBtn.innerText = "MENGHANTAR PERMOHONAN...";
+        
         const d = {
-            full_name: f.get("nama"), ic_number: f.get("no_ic"), student_staff_id: f.get("no_id"), email: f.get("email"), phone: f.get("phone"),
-            category: f.get("kategori"), campus: f.get("kampus"), studio_name: f.get("studio"), start_date: f.get("tarikh_mula"), 
-            end_date: f.get("tarikh_tamat"), start_time: document.getElementById("masa_mula").value, end_time: document.getElementById("masa_tamat").value,
-            technical_requirements: f.get("teknikal"), status: "Menunggu"
+            full_name: f.get("nama"), 
+            ic_number: f.get("no_ic"), 
+            student_staff_id: f.get("no_id"), 
+            email: f.get("email"), 
+            phone: f.get("phone"),
+            category: f.get("kategori"), 
+            campus: f.get("kampus"), 
+            studio_name: studio, 
+            start_date: sDate, 
+            end_date: eDate, 
+            start_time: mMula.value, 
+            end_time: mTamat.value,
+            technical_requirements: f.get("teknikal"), 
+            status: "Menunggu"
         };
+
         const { error } = await _supabase.from('bookings').insert([d]);
-        if(error) alert("Ralat semasa menghantar: " + error.message);
-        else { alert("PERMOHONAN BERJAYA DIHANTAR! Sila tunggu kelulusan pihak admin."); this.reset(); loadOccupiedSlots(); }
-        submitBtn.innerText = "Hantar Permohonan"; submitBtn.disabled = false;
+        
+        if(error) {
+            alert("Ralat semasa menghantar: " + error.message);
+            submitBtn.innerText = "Hantar Permohonan";
+            submitBtn.disabled = false;
+        } else {
+            alert("PERMOHONAN BERJAYA DIHANTAR! Pihak PBS akan menyemak permohonan anda dalam masa 48 jam.");
+            this.reset();
+            loadOccupiedSlots();
+            submitBtn.innerText = "Hantar Permohonan";
+        }
     };
 
+    // INITIAL LOAD
+    setMinDates();
     loadOccupiedSlots();
 </script>
 </body>
