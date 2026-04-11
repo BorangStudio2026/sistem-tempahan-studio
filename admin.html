@@ -3,65 +3,170 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Panel Admin - Sistem Tempahan Studio</title>
+    <title>Admin Dashboard | PBS UMK</title>
     
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
     
-    <script type="text/javascript">
-        (function(){
-            // GANTI: Masukkan Public Key dari EmailJS Account > API Keys
-            emailjs.init("yowh5RJSxQnHcvjT2"); 
-        })();
-    </script>
-
     <style>
-        body { font-family: 'Inter', sans-serif; background-color: #f8fafc; padding: 20px; color: #1e293b; }
-        .dashboard-stats { display: flex; gap: 20px; margin-bottom: 30px; justify-content: center; }
-        .stat-card { background: white; padding: 20px; border-radius: 12px; box-shadow: 0 2px 4px rgba(0,0,0,0.05); text-align: center; min-width: 200px; border-top: 4px solid #3b82f6; }
-        .stat-card h2 { margin: 10px 0 0; font-size: 2rem; color: #1e293b; }
-        .table-container { background: white; border-radius: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); overflow: hidden; max-width: 1200px; margin: auto; }
+        :root {
+            --primary: #003366;
+            --accent: #d4af37;
+            --success: #10b981;
+            --danger: #ef4444;
+            --warning: #f59e0b;
+            --sidebar-width: 260px;
+            --glass: rgba(255, 255, 255, 0.9);
+        }
+
+        body { 
+            font-family: 'Plus Jakarta Sans', sans-serif; 
+            background: #f4f7fa; 
+            margin: 0; 
+            display: flex;
+            color: #1e293b;
+        }
+
+        /* Sidebar Styling */
+        .sidebar {
+            width: var(--sidebar-width);
+            background: var(--primary);
+            height: 100vh;
+            position: fixed;
+            color: white;
+            padding: 30px 20px;
+            box-sizing: border-box;
+            display: flex;
+            flex-direction: column;
+            z-index: 100;
+        }
+
+        .sidebar h2 { font-size: 1.2rem; font-weight: 800; margin-bottom: 40px; border-left: 4px solid var(--accent); padding-left: 15px; }
+        
+        .nav-item { 
+            padding: 12px 15px; border-radius: 10px; margin-bottom: 10px; 
+            cursor: pointer; transition: 0.3s; display: flex; align-items: center; gap: 10px;
+            font-weight: 500; font-size: 0.9rem; opacity: 0.7;
+        }
+        .nav-item.active { background: rgba(255,255,255,0.1); opacity: 1; border-right: 3px solid var(--accent); }
+        .nav-item:hover { opacity: 1; background: rgba(255,255,255,0.05); }
+
+        /* Main Content */
+        .main-content {
+            margin-left: var(--sidebar-width);
+            width: calc(100% - var(--sidebar-width));
+            padding: 40px;
+            box-sizing: border-box;
+        }
+
+        .top-bar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 40px; }
+        .top-bar h1 { font-size: 1.5rem; font-weight: 800; margin: 0; }
+
+        /* Stats Cards */
+        .stats-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 25px; margin-bottom: 40px; }
+        .stat-card { 
+            background: white; padding: 25px; border-radius: 20px; 
+            box-shadow: 0 10px 25px -5px rgba(0,0,0,0.05);
+            display: flex; flex-direction: column; position: relative; overflow: hidden;
+        }
+        .stat-card span { font-size: 0.8rem; font-weight: 700; color: #64748b; text-transform: uppercase; letter-spacing: 0.5px; }
+        .stat-card h2 { font-size: 2.2rem; margin: 10px 0 0; color: var(--primary); }
+        .stat-card::after { content: ""; position: absolute; bottom: 0; left: 0; height: 4px; width: 100%; }
+        .stat-pending::after { background: var(--warning); }
+        .stat-approved::after { background: var(--success); }
+        .stat-total::after { background: var(--primary); }
+
+        /* Table Area */
+        .table-section { 
+            background: white; border-radius: 24px; 
+            box-shadow: 0 20px 50px -10px rgba(0,0,0,0.08); overflow: hidden;
+        }
+        .table-header { padding: 25px 30px; border-bottom: 1px solid #f1f5f9; display: flex; justify-content: space-between; align-items: center; }
+        .table-header h3 { margin: 0; font-size: 1.1rem; }
+
         table { width: 100%; border-collapse: collapse; }
-        th { background: #f1f5f9; padding: 15px; text-align: left; font-size: 0.85rem; text-transform: uppercase; color: #64748b; }
-        td { padding: 15px; border-bottom: 1px solid #f1f5f9; vertical-align: top; }
-        .tech-box { background: #f8fafc; padding: 8px; border-radius: 6px; font-size: 0.8rem; border: 1px dashed #cbd5e1; max-width: 200px; }
-        .badge { padding: 5px 10px; border-radius: 20px; font-size: 0.75rem; font-weight: bold; text-transform: uppercase; }
-        .status-menunggu { background: #fef3c7; color: #92400e; }
-        .status-lulus { background: #dcfce7; color: #166534; }
-        .status-tolak { background: #fee2e2; color: #991b1b; }
-        .btn-action { padding: 6px 12px; border: none; border-radius: 6px; cursor: pointer; font-weight: 600; margin-bottom: 5px; width: 100%; }
-        .btn-lulus { background: #22c55e; color: white; }
-        .btn-tolak { background: #ef4444; color: white; }
-        .contact-info { display: block; font-size: 0.8rem; color: #64748b; margin-top: 4px; }
+        th { background: #f8fafc; padding: 18px 25px; text-align: left; font-size: 0.7rem; text-transform: uppercase; color: #94a3b8; letter-spacing: 1px; }
+        td { padding: 20px 25px; border-bottom: 1px solid #f1f5f9; font-size: 0.9rem; }
+        
+        .user-info strong { color: var(--primary); display: block; margin-bottom: 4px; }
+        .user-info small { color: #94a3b8; font-weight: 500; }
+
+        .status-pill { 
+            padding: 6px 14px; border-radius: 8px; font-size: 0.75rem; font-weight: 700; 
+            display: inline-flex; align-items: center; gap: 6px;
+        }
+        .pill-menunggu { background: #fffbeb; color: #b45309; }
+        .pill-lulus { background: #ecfdf5; color: #065f46; }
+        .pill-tolak { background: #fef2f2; color: #991b1b; }
+
+        /* Pulse Animation for Pending */
+        .pulse { width: 8px; height: 8px; border-radius: 50%; background: currentColor; animation: pulse-anim 1.5s infinite; }
+        @keyframes pulse-anim { 0% { opacity: 1; transform: scale(1); } 50% { opacity: 0.4; transform: scale(1.2); } 100% { opacity: 1; transform: scale(1); } }
+
+        .btn-group { display: flex; gap: 8px; }
+        .action-btn { 
+            border: none; padding: 8px; border-radius: 8px; cursor: pointer; 
+            transition: 0.2s; display: flex; align-items: center; justify-content: center;
+        }
+        .btn-check { background: #ecfdf5; color: #10b981; border: 1px solid #d1fae5; }
+        .btn-check:hover { background: #10b981; color: white; }
+        .btn-x { background: #fef2f2; color: #ef4444; border: 1px solid #fee2e2; }
+        .btn-x:hover { background: #ef4444; color: white; }
+
+        .tech-tag { font-size: 0.8rem; background: #f8fafc; border: 1px solid #e2e8f0; padding: 8px; border-radius: 10px; color: #64748b; }
+
+        @media (max-width: 1024px) {
+            .sidebar { width: 80px; padding: 30px 10px; }
+            .sidebar h2, .nav-item span { display: none; }
+            .main-content { margin-left: 80px; width: calc(100% - 80px); }
+            .stats-grid { grid-template-columns: 1fr; }
+        }
     </style>
 </head>
 <body>
 
-<div class="dashboard-stats">
-    <div class="stat-card"><span>Menunggu Semakan</span><h2 id="pending-count">0</h2></div>
-    <div class="stat-card"><span>Telah Diluluskan</span><h2 id="approved-count">0</h2></div>
-    <div class="stat-card"><span>Jumlah Tempahan</span><h2 id="total-count">0</h2></div>
+<div class="sidebar">
+    <h2>PBS ADMIN</h2>
+    <div class="nav-item active"><span>🏠</span> <span>Dashboard</span></div>
+    <div class="nav-item"><span>📊</span> <span>Laporan</span></div>
+    <div class="nav-item"><span>⚙️</span> <span>Tetapan</span></div>
 </div>
 
-<div class="table-container">
-    <table>
-        <thead>
-            <tr>
-                <th>Nama Pemohon</th>
-                <th>Hubungan & Kategori</th>
-                <th>Studio & Kampus</th>
-                <th>Tarikh & Masa</th>
-                <th>Keperluan Teknikal</th>
-                <th>Status</th>
-                <th>Tindakan</th>
-            </tr>
-        </thead>
-        <tbody id="adminTableBody"></tbody>
-    </table>
+<div class="main-content">
+    <div class="top-bar">
+        <h1>Ringkasan Tempahan</h1>
+        <button class="action-btn btn-check" style="padding: 10px 20px;" onclick="fetchBookings()">🔄 Segarkan Data</button>
+    </div>
+
+    <div class="stats-grid">
+        <div class="stat-card stat-pending"><span>Menunggu</span><h2 id="pending-count">0</h2></div>
+        <div class="stat-card stat-approved"><span>Lulus</span><h2 id="approved-count">0</h2></div>
+        <div class="stat-card stat-total"><span>Jumlah</span><h2 id="total-count">0</h2></div>
+    </div>
+
+    <div class="table-section">
+        <div class="table-header">
+            <h3>Senarai Permohonan</h3>
+        </div>
+        <table>
+            <thead>
+                <tr>
+                    <th>Pemohon</th>
+                    <th>Studio & Lokasi</th>
+                    <th>Tempoh Tempahan</th>
+                    <th>Status</th>
+                    <th>Tindakan</th>
+                </tr>
+            </thead>
+            <tbody id="adminTableBody">
+                <tr><td colspan="5" style="text-align:center; padding:50px;">Memuatkan data...</td></tr>
+            </tbody>
+        </table>
+    </div>
 </div>
 
 <script>
-    // 2. KONFIGURASI SUPABASE
     const supabaseUrl = 'https://lweolipmulciepadidvk.supabase.co';
     const supabaseKey = 'sb_publishable_V-12ORVq7uTmuKk9X8PPnQ_hcm_J2c2';
     const _supabase = supabase.createClient(supabaseUrl, supabaseKey);
@@ -72,11 +177,7 @@
             .select('*')
             .order('created_at', { ascending: false });
 
-        if (error) {
-            console.error('Ralat:', error.message);
-            return;
-        }
-
+        if (error) return;
         renderAdminTable(data);
         updateDashboardStats(data);
     }
@@ -87,84 +188,57 @@
 
         bookings.forEach(item => {
             const row = document.createElement('tr');
+            const statusClass = item.status.toLowerCase();
+            
             row.innerHTML = `
                 <td>
-                    <strong>${item.
-full_name}</strong><br>
-                    <small>${item.student_staff_id}</small>
+                    <div class="user-info">
+                        <strong>${item.full_name}</strong>
+                        <small>${item.student_staff_id} • ${item.category}</small>
+                    </div>
                 </td>
                 <td>
-                    <span style="font-weight:600">${item.category}</span><br>
-                    <span class="contact-info">📧 ${item.email}</span>
-                    <span class="contact-info">📞 ${item.phone}</span>
+                    <div class="user-info">
+                        <strong>${item.studio_name}</strong>
+                        <small>Kampus ${item.campus.toUpperCase()}</small>
+                    </div>
                 </td>
                 <td>
-                    <strong>${item.studio_name}</strong><br>
-                    <small>Kampus ${item.campus ? item.campus.toUpperCase() : 'N/A'}</small>
+                    <div class="user-info">
+                        <strong>${item.start_date}</strong>
+                        <small>${item.start_time} - ${item.end_time}</small>
+                    </div>
                 </td>
                 <td>
-                    ${item.start_date} → ${item.end_date}<br>
-                    <small>${item.start_time} - ${item.end_time}</small>
+                    <span class="status-pill pill-${statusClass}">
+                        ${statusClass === 'menunggu' ? '<div class="pulse"></div>' : ''}
+                        ${item.status}
+                    </span>
                 </td>
                 <td>
-                    <div class="tech-box">${item.technical_requirements || 'Tiada'}</div>
-                </td>
-                <td>
-                    <span class="badge status-${item.status.toLowerCase()}">${item.status}</span>
-                </td>
-                <td>
-                    ${item.status === 'Menunggu' ? `
-                        <button class="btn-action btn-lulus" onclick="changeStatus(${item.id}, 'Lulus')">Lulus</button>
-                        <button class="btn-action btn-tolak" onclick="changeStatus(${item.id}, 'Tolak')">Tolak</button>
-                    ` : `<small style="color:#94a3b8">Selesai</small>`}
+                    <div class="btn-group">
+                        ${item.status === 'Menunggu' ? `
+                            <button class="action-btn btn-check" title="Luluskan" onclick="changeStatus(${item.id}, 'Lulus')">✅</button>
+                            <button class="action-btn btn-x" title="Tolak" onclick="changeStatus(${item.id}, 'Tolak')">❌</button>
+                        ` : '<span style="font-size:0.7rem; color:#cbd5e1; font-weight:700;">PROSES SELESAI</span>'}
+                        <button class="action-btn" style="background:#f1f5f9" onclick="window.open('https://wa.me/6${item.phone}')">💬</button>
+                    </div>
                 </td>
             `;
             tbody.appendChild(row);
         });
     }
 
-    // 3. FUNGSI UPDATE STATUS & HANTAR EMEL
     async function changeStatus(id, newStatus) {
-        if (!confirm(`Tukar status kepada ${newStatus} dan hantar notifikasi emel?`)) return;
+        if (!confirm(`Sahkan status ${newStatus}?`)) return;
 
-        // Ambil data pemohon dulu
-        const { data: applicant, error: fetchError } = await _supabase
-            .from('bookings')
-            .select('*')
-            .eq('id', id)
-            .single();
+        const { data: applicant } = await _supabase.from('bookings').select('*').eq('id', id).single();
+        const { error } = await _supabase.from('bookings').update({ status: newStatus }).eq('id', id);
 
-        if (fetchError) return alert('Ralat ambil data: ' + fetchError.message);
-
-        // Update database
-        const { error: updateError } = await _supabase
-            .from('bookings')
-            .update({ status: newStatus })
-            .eq('id', id);
-
-        if (updateError) {
-            alert('Gagal mengemaskini status: ' + updateError.message);
-        } else {
-            // Hantar Notifikasi Emel via EmailJS
-            const emailParams = {
-                to_name: applicant.full_name,
-                to_email: applicant.email,
-                studio: applicant.studio_name,
-                status: newStatus,
-                tarikh: ${applicant.start_date} hingga ${applicant.end_date},
-                masa: ${applicant.start_time} - ${applicant.end_time}
-            };
-
-            // GANTI: Masukkan Service ID dan Template ID anda
-            emailjs.send("YOUR_SERVICE_ID", "YOUR_TEMPLATE_ID", emailParams)
-                .then(() => {
-                    alert(`Berjaya! Status dikemaskini ke ${newStatus} & Emel dihantar kepada pemohon.`);
-                    fetchBookings(); 
-                })
-                .catch((err) => {
-                    alert('Status dikemaskini, tapi EMEL GAGAL: ' + JSON.stringify(err));
-                    fetchBookings();
-                });
+        if (!error) {
+            alert("Berjaya dikemaskini.");
+            fetchBookings();
+            // Panggil EmailJS di sini jika perlu
         }
     }
 
