@@ -4,98 +4,163 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Sistem Tempahan Studio PKUMK</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <style>
         :root { 
-            --primary-color: #003366; 
-            --accent-color: #d4af37; 
-            --bg-gradient: linear-gradient(135deg, #003366 0%, #001a33 100%);
+            --primary: #003366; 
+            --primary-light: #004d99;
+            --accent: #d4af37; 
+            --bg-body: #f8fafc;
             --card-bg: #ffffff;
-            --danger: #e53e3e; 
-            --success: #38a169;
+            --danger: #ef4444; 
+            --success: #22c55e;
+            --text-main: #1e293b;
+            --text-muted: #64748b;
         }
 
-        body { font-family: 'Inter', sans-serif; margin: 0; padding: 0; background: #f0f2f5; min-height: 100vh; }
+        body { 
+            font-family: 'Plus Jakarta Sans', sans-serif; 
+            margin: 0; padding: 0; 
+            background-color: var(--bg-body); 
+            color: var(--text-main);
+            line-height: 1.6;
+        }
 
+        /* Header Styling */
         .main-wrapper {
-            background: var(--bg-gradient);
-            padding: 60px 20px 160px 20px;
+            background: linear-gradient(135deg, #001a33 0%, #003366 100%);
+            padding: 80px 20px 180px 20px;
             text-align: center;
             color: white;
             position: relative;
         }
 
-        .logo-umk { height: 100px; margin-bottom: 20px; filter: drop-shadow(0 4px 6px rgba(0,0,0,0.2)); }
-        h1 { font-size: 1.8rem; font-weight: 800; margin: 0; letter-spacing: -0.5px; line-height: 1.2; }
-        
-        .hubungi-pantas { font-size: 0.85rem; margin-top: 15px; opacity: 0.9; }
-        .hubungi-pantas span { margin: 0 10px; border-right: 1px solid rgba(255,255,255,0.3); padding-right: 10px; }
-        .hubungi-pantas span:last-child { border: none; }
+        .main-wrapper::after {
+            content: "";
+            position: absolute;
+            bottom: 0; left: 0; right: 0;
+            height: 100px;
+            background: linear-gradient(to top, var(--bg-body), transparent);
+        }
 
+        .logo-umk { height: 110px; margin-bottom: 25px; filter: drop-shadow(0 8px 15px rgba(0,0,0,0.3)); }
+        
+        h1 { 
+            font-size: 2.2rem; font-weight: 800; margin: 0; 
+            letter-spacing: -1px; line-height: 1.1; 
+            text-shadow: 0 2px 4px rgba(0,0,0,0.2);
+        }
+        
+        .hubungi-pantas { 
+            font-size: 0.9rem; margin-top: 20px; opacity: 0.85; 
+            display: flex; justify-content: center; gap: 20px; flex-wrap: wrap;
+        }
+        .hubungi-pantas span { display: flex; align-items: center; gap: 8px; }
+
+        /* Container & Cards */
         .container { 
-            max-width: 800px; background: var(--card-bg); padding: 40px; border-radius: 20px; 
-            margin: -100px auto 50px auto; box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25); 
+            max-width: 850px; background: var(--card-bg); 
+            padding: 50px; border-radius: 24px; 
+            margin: -120px auto 60px auto; 
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
             position: relative; z-index: 10;
         }
 
         .live-status-box {
-            background: #fff; border: 2px solid var(--accent-color); border-radius: 12px;
-            padding: 20px; margin-bottom: 30px; text-align: left;
+            background: #f1f5f9; border-left: 5px solid var(--accent);
+            border-radius: 12px; padding: 25px; margin-bottom: 40px;
         }
-        .live-status-title { font-weight: 800; color: var(--primary-color); font-size: 0.85rem; margin-bottom: 10px; display: flex; align-items: center; }
-        .live-status-title::before { content: "●"; color: var(--danger); margin-right: 8px; animation: blink 1s infinite; }
-        @keyframes blink { 0% { opacity: 1; } 50% { opacity: 0.3; } 100% { opacity: 1; } }
         
-        .booking-tag-container { display: flex; flex-wrap: wrap; gap: 8px; }
+        .live-status-title { 
+            font-weight: 800; color: var(--primary); font-size: 0.8rem; 
+            margin-bottom: 15px; display: flex; align-items: center; 
+            text-transform: uppercase; letter-spacing: 1px;
+        }
+
+        .live-status-title::before { 
+            content: ""; width: 10px; height: 10px; background: var(--danger); 
+            border-radius: 50%; margin-right: 10px; animation: blink 1.2s infinite; 
+        }
+
+        @keyframes blink { 0% { opacity: 1; transform: scale(1); } 50% { opacity: 0.4; transform: scale(1.1); } 100% { opacity: 1; transform: scale(1); } }
+        
+        .booking-tag-container { display: flex; flex-wrap: wrap; gap: 10px; }
         .booking-tag { 
-            background: #f1f5f9; border: 1px solid #cbd5e1; padding: 6px 12px; border-radius: 6px; 
-            font-size: 0.75rem; color: #475569; font-weight: 600;
+            background: white; border: 1px solid #e2e8f0; padding: 8px 14px; 
+            border-radius: 8px; font-size: 0.8rem; color: var(--text-main); 
+            font-weight: 600; box-shadow: 0 2px 4px rgba(0,0,0,0.05);
         }
 
+        /* Form Styling */
         .section-title { 
-            display: flex; align-items: center; font-size: 1rem; font-weight: 800; 
-            color: var(--primary-color); margin: 30px 0 15px; text-transform: uppercase; 
+            display: flex; align-items: center; font-size: 1.1rem; font-weight: 800; 
+            color: var(--primary); margin: 40px 0 20px; text-transform: uppercase; letter-spacing: 0.5px;
         }
-        .section-title::after { content: ""; flex: 1; height: 2px; background: #edf2f7; margin-left: 15px; }
+        .section-title::after { content: ""; flex: 1; height: 1px; background: #e2e8f0; margin-left: 20px; }
 
-        .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
+        .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
         .full-width { grid-column: span 2; }
 
-        label { display: block; font-weight: 700; font-size: 0.8rem; margin-bottom: 6px; color: #4a5568; }
+        label { display: block; font-weight: 600; font-size: 0.85rem; margin-bottom: 8px; color: var(--text-main); }
+        
         input, select, textarea { 
-            width: 100%; padding: 12px; border: 2px solid #e2e8f0; border-radius: 10px; 
-            font-size: 0.9rem; background: #f8fafc; box-sizing: border-box; transition: 0.2s;
+            width: 100%; padding: 14px; border: 1.5px solid #e2e8f0; border-radius: 12px; 
+            font-size: 0.95rem; background: #ffffff; box-sizing: border-box; 
+            transition: all 0.2s ease; font-family: inherit;
         }
-        input:focus, select:focus { border-color: var(--primary-color); outline: none; background: #fff; }
+        
+        input:focus, select:focus, textarea:focus { 
+            border-color: var(--primary); outline: none; 
+            box-shadow: 0 0 0 4px rgba(0, 51, 102, 0.1); background: #fff;
+        }
 
-        .logistic-box { background: #f8fafc; padding: 20px; border-radius: 15px; border: 1px solid #e2e8f0; }
-        .date-row { display: flex; gap: 15px; margin-bottom: 15px; }
-        .date-input-group { flex: 1; }
+        .logistic-box { 
+            background: #f8fafc; padding: 25px; border-radius: 16px; 
+            border: 1px solid #e2e8f0; 
+        }
 
-        .syarat-box { background: #fffaf0; border: 1px solid #feebc8; padding: 20px; border-radius: 12px; margin-top: 30px; }
-        .syarat-box li { margin-bottom: 8px; font-size: 0.85rem; color: #4a5568; }
+        /* Terms & Conditions */
+        .syarat-box { 
+            background: #fffbeb; border: 1px solid #fef3c7; 
+            padding: 25px; border-radius: 16px; margin-top: 40px; 
+        }
+        .syarat-box ul { padding-left: 20px; margin: 15px 0; }
+        .syarat-box li { margin-bottom: 10px; font-size: 0.9rem; color: #92400e; }
         
         .amaran-denda { 
-            background: #fff5f5; color: var(--danger); padding: 12px; border-radius: 8px; 
-            text-align: center; font-weight: 800; border: 1px dashed var(--danger); font-size: 0.8rem; margin-top: 15px;
+            background: #fef2f2; color: #991b1b; padding: 15px; border-radius: 10px; 
+            text-align: center; font-weight: 700; border: 1px dashed #f87171; 
+            font-size: 0.85rem; margin-top: 20px;
         }
 
+        /* Button Styling */
         button { 
-            background: var(--primary-color); color: white; padding: 18px; border: none; 
-            border-radius: 12px; width: 100%; font-size: 1.1rem; font-weight: 800; cursor: pointer; 
-            margin-top: 30px; text-transform: uppercase; transition: 0.3s;
+            background: var(--primary); color: white; padding: 20px; border: none; 
+            border-radius: 14px; width: 100%; font-size: 1.1rem; font-weight: 700; 
+            cursor: pointer; margin-top: 35px; text-transform: uppercase; 
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            letter-spacing: 1px; box-shadow: 0 10px 15px -3px rgba(0, 51, 102, 0.3);
         }
-        button:hover:not(:disabled) { background: #002244; transform: translateY(-2px); }
-        button:disabled { background: #cbd5e1; cursor: not-allowed; }
+        
+        button:hover:not(:disabled) { 
+            background: var(--primary-light); transform: translateY(-3px); 
+            box-shadow: 0 20px 25px -5px rgba(0, 51, 102, 0.4);
+        }
+        
+        button:active { transform: translateY(0); }
+        button:disabled { background: #cbd5e1; cursor: not-allowed; box-shadow: none; }
 
-        .footer-info { text-align: center; padding-bottom: 40px; color: #718096; font-size: 0.8rem; }
-        .error-msg { color: var(--danger); font-size: 0.75rem; font-weight: 700; display: none; margin-top: 5px; }
+        .footer-info { text-align: center; padding: 40px 0; color: var(--text-muted); font-size: 0.85rem; }
+        .error-msg { color: var(--danger); font-size: 0.8rem; font-weight: 600; display: none; margin-top: 8px; }
 
-        @media (max-width: 600px) {
+        /* Responsive */
+        @media (max-width: 768px) {
             .form-grid { grid-template-columns: 1fr; }
             .full-width { grid-column: span 1; }
-            .container { padding: 25px; margin-top: -80px; }
+            .container { padding: 30px 20px; margin-top: -100px; width: 90%; }
+            h1 { font-size: 1.5rem; }
+            .main-wrapper { padding-top: 60px; }
         }
     </style>
 </head>
@@ -114,38 +179,55 @@
 
 <div class="container">
     <div class="live-status-box">
-        <div class="live-status-title">STATUS TEMPAHAN TERKINI (LULUS)</div>
+        <div class="live-status-title">Status Tempahan Terkini (Lulus)</div>
         <div id="occupiedSlots" class="booking-tag-container">
-            <span style="font-size: 0.8rem; color: #94a3b8;">Menyemak ketersediaan...</span>
+            <span style="font-size: 0.9rem; color: #94a3b8;">Menyemak ketersediaan studio...</span>
         </div>
     </div>
 
     <form id="bookingForm">
         <div class="section-title">1. Maklumat Peribadi</div>
         <div class="form-grid">
-            <div class="full-width"><label>Nama Penuh (Seperti dalam IC)</label><input type="text" name="nama" required></div>
+            <div class="full-width">
+                <label>Nama Penuh (Seperti dalam IC)</label>
+                <input type="text" name="nama" placeholder="Masukkan nama penuh anda" required>
+            </div>
             <div>
                 <label>No. Kad Pengenalan (Tanpa "-")</label>
                 <input type="text" name="no_ic" maxlength="12" pattern="\d{12}" placeholder="Contoh: 010203030501" required>
             </div>
-            <div><label>No. Matrik / No. Staf</label><input type="text" name="no_id" placeholder="Cth: D21A1234" required></div>
-            <div><label>Emel Rasmi/Pelajar</label><input type="email" name="email" placeholder="Cth: ali@siswa.umk.edu.my" required></div>
-            <div><label>No. WhatsApp</label><input type="tel" name="phone" placeholder="Cth: 0123456789" required></div>
-            <div><label>Kategori</label>
+            <div>
+                <label>No. Matrik / No. Staf</label>
+                <input type="text" name="no_id" placeholder="Cth: D21A1234" required>
+            </div>
+            <div>
+                <label>Emel Rasmi/Pelajar</label>
+                <input type="email" name="email" placeholder="Cth: ali@siswa.umk.edu.my" required>
+            </div>
+            <div>
+                <label>No. WhatsApp</label>
+                <input type="tel" name="phone" placeholder="Cth: 0123456789" required>
+            </div>
+            <div>
+                <label>Kategori</label>
                 <select name="kategori" required>
-                    <option value="">-- Pilih --</option>
-                    <option>Pelajar</option><option>Staf</option><option>Orang Awam</option>
+                    <option value="">-- Pilih Kategori --</option>
+                    <option>Pelajar</option>
+                    <option>Staf</option>
+                    <option>Orang Awam</option>
                 </select>
             </div>
-            <div><label>Kampus</label>
+            <div>
+                <label>Kampus</label>
                 <select id="kampus" name="kampus" required>
-                    <option value="">-- Pilih --</option>
+                    <option value="">-- Pilih Kampus --</option>
                     <option value="bachok">Bachok</option>
                     <option value="kota">Kampus Kota</option>
                     <option value="jeli">Kampus Jeli</option>
                 </select>
             </div>
-            <div class="full-width"><label>Pilihan Studio</label>
+            <div class="full-width">
+                <label>Pilihan Studio</label>
                 <select id="studio" name="studio" required disabled>
                     <option value="">-- Pilih Kampus Terlebih Dahulu --</option>
                 </select>
@@ -154,75 +236,80 @@
 
         <div class="section-title">2. Tarikh & Masa Tempahan</div>
         <div class="logistic-box">
-            <div class="date-row">
-                <div class="date-input-group"><label>Tarikh Mula</label><input type="date" id="tarikh_mula" name="tarikh_mula" required></div>
-                <div class="date-input-group"><label>Tarikh Tamat</label><input type="date" id="tarikh_tamat" name="tarikh_tamat" required></div>
+            <div class="form-grid" style="margin-bottom: 20px;">
+                <div>
+                    <label>Tarikh Mula</label>
+                    <input type="date" id="tarikh_mula" name="tarikh_mula" required>
+                </div>
+                <div>
+                    <label>Tarikh Tamat</label>
+                    <input type="date" id="tarikh_tamat" name="tarikh_tamat" required>
+                </div>
             </div>
-            <div id="dateError" class="error-msg">Had tempahan maksimum adalah 3 hari.</div>
+            <div id="dateError" class="error-msg">⚠️ Had tempahan maksimum adalah 3 hari sahaja.</div>
             
             <div class="form-grid">
                 <div>
-    <label>Masa Mula</label>
-    <select name="masa_mula" required>
-        <option value="">-- Pilih --</option>
-        <option value="09:00">09:00 AM</option>
-        <option value="10:00">10:00 AM</option>
-        <option value="11:00">11:00 AM</option>
-        <option value="12:00">12:00 PM</option>
-        <option value="13:00">01:00 PM</option>
-        <option value="14:00">02:00 PM</option>
-        <option value="15:00">03:00 PM</option>
-        <option value="16:00">04:00 PM</option>
-        <option value="17:00">05:00 PM</option>
-        <option value="18:00">06:00 PM</option>
-        <option value="19:00">07:00 PM</option>
-        <option value="20:00">08:00 PM</option>
-        <option value="21:00">09:00 PM</option>
-        <option value="22:00">10:00 PM</option>
-    </select>
-</div>
-
-<div>
-    <label>Masa Tamat</label>
-    <select name="masa_tamat" required>
-        <option value="">-- Pilih --</option>
-        <option value="10:00">10:00 AM</option>
-        <option value="11:00">11:00 AM</option>
-        <option value="12:00">12:00 PM</option>
-        <option value="13:00">01:00 PM</option>
-        <option value="14:00">02:00 PM</option>
-        <option value="15:00">03:00 PM</option>
-        <option value="16:00">04:00 PM</option>
-        <option value="17:00">05:00 PM</option>
-        <option value="18:00">06:00 PM</option>
-        <option value="19:00">07:00 PM</option>
-        <option value="20:00">08:00 PM</option>
-        <option value="21:00">09:00 PM</option>
-        <option value="22:00">10:00 PM</option>
-        <option value="23:00">11:00 PM</option>
-    </select>
-</div>
+                    <label>Masa Mula</label>
+                    <select name="masa_mula" required>
+                        <option value="">-- Pilih Masa --</option>
+                        <option value="09:00">09:00 AM</option>
+                        <option value="10:00">10:00 AM</option>
+                        <option value="11:00">11:00 AM</option>
+                        <option value="12:00">12:00 PM</option>
+                        <option value="13:00">01:00 PM</option>
+                        <option value="14:00">02:00 PM</option>
+                        <option value="15:00">03:00 PM</option>
+                        <option value="16:00">04:00 PM</option>
+                        <option value="17:00">05:00 PM</option>
+                        <option value="18:00">06:00 PM</option>
+                        <option value="19:00">07:00 PM</option>
+                        <option value="20:00">08:00 PM</option>
+                        <option value="21:00">09:00 PM</option>
+                        <option value="22:00">10:00 PM</option>
+                    </select>
+                </div>
+                <div>
+                    <label>Masa Tamat</label>
+                    <select name="masa_tamat" required>
+                        <option value="">-- Pilih Masa --</option>
+                        <option value="10:00">10:00 AM</option>
+                        <option value="11:00">11:00 AM</option>
+                        <option value="12:00">12:00 PM</option>
+                        <option value="13:00">01:00 PM</option>
+                        <option value="14:00">02:00 PM</option>
+                        <option value="15:00">03:00 PM</option>
+                        <option value="16:00">04:00 PM</option>
+                        <option value="17:00">05:00 PM</option>
+                        <option value="18:00">06:00 PM</option>
+                        <option value="19:00">07:00 PM</option>
+                        <option value="20:00">08:00 PM</option>
+                        <option value="21:00">09:00 PM</option>
+                        <option value="22:00">10:00 PM</option>
+                        <option value="23:00">11:00 PM</option>
                     </select>
                 </div>
             </div>
         </div>
 
-        <div class="full-width" style="margin-top:20px">
-            <label>Keperluan Teknikal (Jika ada)</label>
+        <div class="full-width" style="margin-top:25px">
+            <label>Keperluan Teknikal (Opsional)</label>
             <textarea name="teknikal" rows="3" placeholder="Contoh: Mikrofon, PA sistem, atau set peralatan muzik..."></textarea>
         </div>
 
         <div class="syarat-box">
-            <strong style="color: var(--primary-color); font-size: 0.9rem;">PENTING:</strong>
+            <strong style="color: #92400e; font-size: 1rem; display: flex; align-items: center; gap: 8px;">
+                ℹ️ Terma & Syarat Penting
+            </strong>
             <ul>
                 <li>Mohon sekurang-kurangnya <strong>3 hari sebelum</strong> penggunaan.</li>
                 <li>Maksimum tempahan adalah <strong>3 hari berturut-turut</strong> sahaja.</li>
-                <li>Pemohon hendaklah memahami dan mematuhi syarat-syarat, garis panduan dan etika penggunaan kemudahan yang telah ditetapkan oleh Universiti.</li>
-                <li>Pemohon hendaklah bertanggungjawab terhadap keadaan, keselamatan dan kerosakan kemudahan yang digunakan.<li/>
-                <li>Pemohon tidak dibenarkan mengubahsuai kedudukan peralatan di dalam tempat yang digunakan.</li>
-                <li>Kebersihan studio adalah tanggungjawab pemohon.</li>
+                <li>Pemohon hendaklah mematuhi garis panduan dan etika penggunaan kemudahan universiti.</li>
+                <li>Tanggungjawab terhadap keselamatan dan kerosakan adalah di bawah pemohon.</li>
+                <li>Dilarang mengubahsuai kedudukan peralatan asal studio.</li>
+                <li>Kebersihan studio wajib dijaga sepanjang masa.</li>
             </ul>
-            <div class="amaran-denda">PEMOHON HENDAKLAH MEMBAYAR DENDA DAN GANTIRUGI TERHADAP SEBARANG KEKOTORAN DAN KEROSAKAN KEMUDAHAN YANG DIGUNAKAN.</div>
+            <div class="amaran-denda">DENDA AKAN DIKENAKAN BAGI SEBARANG KEROSAKAN ATAU KEKOTORAN YANG DITINGGALKAN.</div>
         </div>
 
         <button type="submit" id="submitBtn">Hantar Permohonan</button>
@@ -234,7 +321,7 @@
 </div>
 
 <script>
-    // KONFIGURASI SUPABASE (Gunakan Public Anon Key)
+    // KONFIGURASI SUPABASE (Tetap sama)
     const supabaseUrl = 'https://lweolipmulciepadidvk.supabase.co';
     const supabaseKey = 'sb_publishable_V-12ORVq7uTmuKk9X8PPnQ_hcm_J2c2'; 
     const _supabase = supabase.createClient(supabaseUrl, supabaseKey);
@@ -250,7 +337,6 @@
     const studioSelect = document.getElementById("studio");
     const submitBtn = document.getElementById("submitBtn");
 
-    // 1. SET MINIMUM DATE & DATE LOGIC
     function initDates() {
         const minDate = new Date();
         minDate.setDate(minDate.getDate() + 3);
@@ -268,7 +354,6 @@
         });
     }
 
-    // 2. DYNAMIC STUDIO DROPDOWN
     document.getElementById("kampus").addEventListener("change", function() {
         studioSelect.innerHTML = '<option value="">-- Pilih Studio --</option>';
         if(this.value && studioData[this.value]) {
@@ -282,7 +367,6 @@
         }
     });
 
-    // 3. LOAD STATUS (REAL-TIME)
     async function loadStatus() {
         const container = document.getElementById('occupiedSlots');
         try {
@@ -297,20 +381,19 @@
                     `<span class="booking-tag">${b.studio_name}: ${b.start_date} → ${b.end_date}</span>`
                 ).join('');
             } else {
-                container.innerHTML = '<span style="color:#94a3b8">Tiada tempahan aktif. Studio sedia digunakan.</span>';
+                container.innerHTML = '<span style="color:#94a3b8; font-size:0.85rem">Tiada tempahan aktif. Studio sedia digunakan.</span>';
             }
         } catch (e) {
             container.innerHTML = 'Gagal memuatkan status.';
         }
     }
 
-    // 4. VALIDATION
     function validateForm() {
         const start = new Date(tMula.value);
         const end = new Date(tTamat.value);
         const diff = (end - start) / (1000 * 60 * 60 * 24);
         
-        if (diff > 2) { // 3 hari max (0,1,2)
+        if (diff > 2) { 
             document.getElementById("dateError").style.display = "block";
             submitBtn.disabled = true;
         } else {
@@ -321,12 +404,11 @@
 
     tTamat.addEventListener('change', validateForm);
 
-    // 5. SUBMISSION
     document.getElementById("bookingForm").onsubmit = async function(e) {
         e.preventDefault();
         
         submitBtn.disabled = true;
-        submitBtn.innerText = "MENGHANTAR...";
+        submitBtn.innerText = "MENGHANTAR PERMOHONAN...";
 
         const formData = new FormData(this);
         const payload = {
@@ -351,7 +433,7 @@
         if (error) {
             alert("Ralat: " + error.message);
         } else {
-            alert("BERJAYA! Permohonan anda telah diterima. Sila semak emel dalam 48 jam.");
+            alert("BERJAYA! Permohonan anda telah diterima. Sila semak emel anda secara berkala untuk status kelulusan.");
             this.reset();
             loadStatus();
         }
