@@ -7,6 +7,7 @@
     
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
     
     <style>
         :root {
@@ -69,6 +70,7 @@
         .status-badge { padding: 6px 12px; border-radius: 8px; font-size: 0.75rem; font-weight: 800; }
         .badge-menunggu { background: #fffbeb; color: #92400e; }
         .badge-lulus { background: #ecfdf5; color: #065f46; }
+        .badge-tolak { background: #fef2f2; color: #991b1b; }
 
         /* Form Styling for Konfigurasi */
         .config-form { max-width: 600px; display: grid; gap: 20px; }
@@ -190,20 +192,19 @@
     const supabaseKey = 'sb_publishable_V-12ORVq7uTmuKk9X8PPnQ_hcm_J2c2';
     const _supabase = supabase.createClient(supabaseUrl, supabaseKey);
 
+    // TAMBAHAN: Initialise EmailJS
+    (function() {
+        emailjs.init("YOUR_PUBLIC_KEY"); // GANTI DENGAN PUBLIC KEY ANDA
+    })();
+
     // FUNGSI TUKAR TAB
     function switchTab(element, tabId) {
-        // Buang active dari semua nav-item
         document.querySelectorAll('.nav-item').forEach(nav => nav.classList.remove('active'));
-        // Tambah active pada yang ditekan
         element.classList.add('active');
-
-        // Sembunyikan semua tab-content
         document.querySelectorAll('.tab-content').forEach(tab => tab.classList.remove('active'));
-        // Tunjukkan tab yang dipilih
         document.getElementById(tabId).classList.add('active');
     }
 
-    // FUNGSI DATA (Sama seperti kod asal anda)
     async function fetchBookings() {
         const { data, error } = await _supabase.from('bookings').select('*').order('created_at', { ascending: false });
         if (error) return;
@@ -223,7 +224,10 @@
                     <td>${item.start_date}<br><small>${item.start_time} - ${item.end_time}</small></td>
                     <td><span class="status-badge badge-${statusKey}">${item.status}</span></td>
                     <td>
-                        <button onclick="changeStatus(${item.id}, 'Lulus')" style="cursor:pointer">✅</button>
+                        ${item.status === 'Menunggu' ? `
+                            <button onclick="changeStatus(${item.id}, 'Lulus')" style="cursor:pointer">✅</button>
+                            <button onclick="changeStatus(${item.id}, 'Tolak')" style="cursor:pointer">❌</button>
+                        ` : ''}
                         <button onclick="window.open('https://wa.me/6${item.phone}')" style="cursor:pointer">💬</button>
                     </td>
                 </tr>
@@ -232,10 +236,48 @@
         });
     }
 
+    // TAMBAHAN: Fungsi Kemaskini Status + Emel
     async function changeStatus(id, newStatus) {
-        if (!confirm('Luluskan tempahan ini?')) return;
-        const { error } = await _supabase.from('bookings').update({ status: newStatus }).eq('id', id);
-        if (!error) fetchBookings();
+        const action = newStatus === 'Lulus' ? 'meluluskan' : 'menolak';
+        if (!confirm(`Sahkan untuk ${action} tempahan ini?`)) return;
+
+        // 1. Ambil data permohonan terlebih dahulu untuk dapatkan emel
+        const { data: booking, error: fetchError } = await _supabase.from('bookings').select('*').eq('id', id).single();
+        
+        if (fetchError) {
+            alert("Ralat mengambil data.");
+            return;
+        }
+
+        // 2. Kemaskini status di Database
+        const { error: updateError } = await _supabase.from('bookings').update({ status: newStatus }).eq('id', id);
+        
+        if (!updateError) {
+            // 3. Panggil fungsi hantar emel
+            sendNotificationEmail(booking, newStatus);
+            alert(`Berjaya dikemaskini ke ${newStatus}. Emel notifikasi akan dihantar.`);
+            fetchBookings();
+        } else {
+            alert("Ralat kemaskini: " + updateError.message);
+        }
+    }
+
+    // TAMBAHAN: Fungsi EmailJS
+    function sendNotificationEmail(booking, status) {
+        const templateParams = {
+            to_name: booking.full_name,
+            status: status.toUpperCase(),
+            studio_name: booking.studio_name,
+            date: booking.start_date,
+            user_email: booking.email // Pastikan field 'email' wujud dalam table anda
+        };
+
+        emailjs.send('YOUR_SERVICE_ID', 'YOUR_TEMPLATE_ID', templateParams)
+            .then(function(response) {
+               console.log('SUCCESS!', response.status, response.text);
+            }, function(error) {
+               console.log('FAILED...', error);
+            });
     }
 
     function updateDashboardStats(bookings) {
