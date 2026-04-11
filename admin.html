@@ -7,16 +7,13 @@
     
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
     
     <style>
         :root {
             --primary: #003366;
-            --primary-light: #004d99;
             --accent: #d4af37;
             --success: #10b981;
             --danger: #ef4444;
-            --warning: #f59e0b;
             --bg-body: #f8fafc;
             --sidebar-width: 280px;
         }
@@ -24,363 +21,192 @@
         body { 
             font-family: 'Plus Jakarta Sans', sans-serif; 
             background-color: var(--bg-body); 
-            margin: 0; 
-            display: flex;
-            color: #1e293b;
-            min-height: 100vh;
+            margin: 0; display: flex; color: #1e293b; min-height: 100vh;
         }
 
-        /* Sidebar Styling */
+        /* Sidebar */
         .sidebar {
-            width: var(--sidebar-width);
-            background: linear-gradient(180deg, #001a33 0%, #003366 100%);
-            height: 100vh;
-            position: fixed;
-            color: white;
-            padding: 40px 24px;
-            box-sizing: border-box;
-            display: flex;
-            flex-direction: column;
-            z-index: 100;
-            transition: all 0.3s ease;
+            width: var(--sidebar-width); background: linear-gradient(180deg, #001a33 0%, #003366 100%);
+            height: 100vh; position: fixed; color: white; padding: 40px 24px; box-sizing: border-box;
+            display: flex; flex-direction: column; z-index: 100;
         }
 
-        .sidebar-brand {
-            font-size: 1.4rem;
-            font-weight: 800;
-            margin-bottom: 50px;
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            letter-spacing: -0.5px;
-        }
-
-        .sidebar-brand span {
-            color: var(--accent);
-        }
+        .sidebar-brand { font-size: 1.4rem; font-weight: 800; margin-bottom: 50px; display: flex; align-items: center; gap: 12px; }
+        .sidebar-brand span { color: var(--accent); }
         
-        .nav-menu { flex: 1; }
-
         .nav-item { 
-            padding: 14px 18px;
-            border-radius: 12px;
-            margin-bottom: 8px; 
-            cursor: pointer;
-            transition: all 0.2s ease;
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            font-weight: 600;
-            font-size: 0.95rem;
-            color: rgba(255, 255, 255, 0.7);
-            text-decoration: none;
+            padding: 14px 18px; border-radius: 12px; margin-bottom: 8px; cursor: pointer;
+            transition: 0.2s; display: flex; align-items: center; gap: 12px;
+            font-weight: 600; color: rgba(255, 255, 255, 0.7); text-decoration: none;
         }
 
-        .nav-item.active {
-            background: rgba(255, 255, 255, 0.1);
-            color: white;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-        }
-
-        .nav-item:hover {
-            color: white;
-            background: rgba(255, 255, 255, 0.05);
-        }
+        .nav-item.active { background: rgba(255, 255, 255, 0.1); color: white; }
+        .nav-item:hover { color: white; background: rgba(255, 255, 255, 0.05); }
 
         /* Main Content */
         .main-content {
-            margin-left: var(--sidebar-width);
-            width: calc(100% - var(--sidebar-width));
-            padding: 40px;
-            box-sizing: border-box;
-            transition: all 0.3s ease;
+            margin-left: var(--sidebar-width); width: calc(100% - var(--sidebar-width));
+            padding: 40px; box-sizing: border-box;
         }
 
-        .top-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 40px;
-        }
+        .tab-content { display: none; animation: fadeIn 0.3s ease; }
+        .tab-content.active { display: block; }
 
-        .top-header h1 { 
-            font-size: 1.75rem; 
-            font-weight: 800; 
-            margin: 0; 
-            letter-spacing: -0.5px;
-        }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 
-        /* Stats Cards */
-        .stats-grid { 
-            display: grid; 
-            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); 
-            gap: 24px; 
-            margin-bottom: 40px; 
-        }
-
-        .stat-card { 
-            background: white;
-            padding: 28px;
-            border-radius: 20px; 
-            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
-            display: flex;
-            flex-direction: column;
-            position: relative;
-            border: 1px solid #f1f5f9;
-        }
-
-        .stat-card .label { 
-            font-size: 0.85rem; 
-            font-weight: 700; 
-            color: #64748b; 
-            text-transform: uppercase; 
-            letter-spacing: 1px;
-            margin-bottom: 8px;
-        }
-
-        .stat-card .value { 
-            font-size: 2.5rem; 
-            font-weight: 800; 
-            color: var(--primary);
-            line-height: 1;
-        }
-
-        .stat-card::before {
-            content: "";
-            position: absolute;
-            top: 0; left: 0;
-            width: 6px; height: 100%;
-            border-radius: 20px 0 0 20px;
-        }
-
-        .stat-pending::before { background: var(--warning); }
-        .stat-approved::before { background: var(--success); }
-        .stat-total::before { background: var(--primary); }
-
-        /* Table Styling */
-        .table-container { 
-            background: white;
-            border-radius: 24px; 
-            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.05);
-            overflow: hidden;
-            border: 1px solid #f1f5f9;
-        }
-
-        .table-header {
-            padding: 25px 30px;
-            border-bottom: 1px solid #f1f5f9;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            background: #ffffff;
-        }
-
-        .table-header h3 { margin: 0; font-size: 1.1rem; font-weight: 700; }
-
-        .table-wrapper { overflow-x: auto; }
-
-        table { width: 100%; border-collapse: collapse; min-width: 900px; }
+        /* Elements Styling */
+        .top-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 40px; }
+        .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 24px; margin-bottom: 40px; }
+        .stat-card { background: white; padding: 28px; border-radius: 20px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); border-left: 6px solid var(--primary); }
+        .table-container { background: white; border-radius: 24px; box-shadow: 0 10px 25px rgba(0,0,0,0.05); overflow: hidden; }
         
-        th { 
-            background: #f8fafc; 
-            padding: 16px 24px; 
-            text-align: left; 
-            font-size: 0.75rem; 
-            text-transform: uppercase; 
-            color: #64748b; 
-            letter-spacing: 1px;
-            font-weight: 700;
-        }
+        table { width: 100%; border-collapse: collapse; min-width: 800px; }
+        th { background: #f8fafc; padding: 16px 24px; text-align: left; font-size: 0.75rem; color: #64748b; text-transform: uppercase; }
+        td { padding: 20px 24px; border-bottom: 1px solid #f1f5f9; }
 
-        td { 
-            padding: 20px 24px; 
-            border-bottom: 1px solid #f1f5f9; 
-            vertical-align: middle;
-        }
-
-        .user-cell strong { 
-            display: block; 
-            color: var(--primary); 
-            font-size: 0.95rem; 
-            margin-bottom: 4px;
-        }
-
-        .user-cell small { 
-            color: #94a3b8; 
-            font-weight: 500; 
-            display: block;
-            font-size: 0.8rem;
-        }
-
-        /* Status Badges */
-        .status-badge { 
-            padding: 6px 14px; 
-            border-radius: 10px; 
-            font-size: 0.75rem; 
-            font-weight: 800; 
-            display: inline-flex; 
-            align-items: center; 
-            gap: 8px;
-            text-transform: uppercase;
-        }
-
+        .btn-refresh { background: var(--primary); color: white; padding: 12px 24px; border: none; border-radius: 12px; font-weight: 700; cursor: pointer; }
+        
+        .status-badge { padding: 6px 12px; border-radius: 8px; font-size: 0.75rem; font-weight: 800; }
         .badge-menunggu { background: #fffbeb; color: #92400e; }
         .badge-lulus { background: #ecfdf5; color: #065f46; }
-        .badge-tolak { background: #fef2f2; color: #991b1b; }
 
-        .dot { width: 8px; height: 8px; border-radius: 50%; background: currentColor; }
-        .dot-pulse { animation: pulse 1.5s infinite; }
+        /* Form Styling for Konfigurasi */
+        .config-form { max-width: 600px; display: grid; gap: 20px; }
+        .form-group { display: flex; flex-direction: column; gap: 8px; }
+        .form-group label { font-weight: 700; font-size: 0.9rem; }
+        .form-group input { padding: 12px; border: 1px solid #e2e8f0; border-radius: 10px; }
 
-        @keyframes pulse { 0% { opacity: 1; transform: scale(1); } 50% { opacity: 0.4; transform: scale(1.2); } 100% { opacity: 1; transform: scale(1); } }
-
-        /* Action Buttons */
-        .btn-group { display: flex; gap: 10px; }
-
-        .btn-icon { 
-            width: 40px; height: 40px;
-            border: none; 
-            border-radius: 12px; 
-            cursor: pointer; 
-            transition: all 0.2s ease;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 1.1rem;
-        }
-
-        .btn-approve { background: #ecfdf5; color: var(--success); }
-        .btn-approve:hover { background: var(--success); color: white; transform: translateY(-2px); }
-
-        .btn-reject { background: #fef2f2; color: var(--danger); }
-        .btn-reject:hover { background: var(--danger); color: white; transform: translateY(-2px); }
-
-        .btn-wa { background: #f1f5f9; color: #475569; }
-        .btn-wa:hover { background: #25d366; color: white; transform: translateY(-2px); }
-
-        .btn-refresh {
-            background: var(--primary);
-            color: white;
-            padding: 12px 24px;
-            border: none;
-            border-radius: 12px;
-            font-weight: 700;
-            font-size: 0.9rem;
-            cursor: pointer;
-            transition: 0.3s;
-            display: flex; align-items: center; gap: 8px;
-        }
-
-        .btn-refresh:hover { background: var(--primary-light); transform: scale(1.02); }
-
-        /* Responsive Layout */
         @media (max-width: 1024px) {
-            .sidebar { width: 85px; padding: 40px 15px; }
-            .sidebar-brand span, .nav-item span:not(.icon) { display: none; }
-            .main-content { margin-left: 85px; width: calc(100% - 85px); padding: 30px 20px; }
-            .sidebar-brand { justify-content: center; margin-left: 0; }
-        }
-
-        @media (max-width: 768px) {
-            .stats-grid { grid-template-columns: 1fr; }
-            .top-header { flex-direction: column; align-items: flex-start; gap: 20px; }
-            .btn-refresh { width: 100%; justify-content: center; }
+            .sidebar { width: 85px; }
+            .sidebar-brand span, .nav-item span:last-child { display: none; }
+            .main-content { margin-left: 85px; width: calc(100% - 85px); }
         }
     </style>
 </head>
 <body>
 
 <div class="sidebar">
-    <div class="sidebar-brand">
-        🏛️ <span>PBS ADMIN</span>
-    </div>
+    <div class="sidebar-brand">🏛️ <span>PBS ADMIN</span></div>
     
     <nav class="nav-menu">
-        <a href="#" class="nav-item active">
-            <span class="icon">🏠</span> <span>Dashboard</span>
-        </a>
-        <a href="#" class="nav-item">
-            <span class="icon">📊</span> <span>Laporan</span>
-        </a>
-        <a href="#" class="nav-item">
-            <span class="icon">⚙️</span> <span>Konfigurasi</span>
-        </a>
+        <div class="nav-item active" onclick="switchTab(this, 'dashboard')">
+            <span>🏠</span> <span>Dashboard</span>
+        </div>
+        <div class="nav-item" onclick="switchTab(this, 'laporan')">
+            <span>📊</span> <span>Laporan</span>
+        </div>
+        <div class="nav-item" onclick="switchTab(this, 'konfigurasi')">
+            <span>⚙️</span> <span>Konfigurasi</span>
+        </div>
     </nav>
-
-    <div class="nav-item" style="margin-top: auto; opacity: 0.5;">
-        <span class="icon">🚪</span> <span>Log Keluar</span>
-    </div>
 </div>
 
 <div class="main-content">
-    <header class="top-header">
-        <div>
+    
+    <div id="dashboard" class="tab-content active">
+        <header class="top-header">
             <h1>Ringkasan Tempahan</h1>
-            <p style="color: #64748b; margin: 5px 0 0; font-size: 0.9rem;">Selamat kembali, Pengurus Studio PBS.</p>
-        </div>
-        <button class="btn-refresh" onclick="fetchBookings()">
-            <span>🔄</span> Segarkan Data
-        </button>
-    </header>
+            <button class="btn-refresh" onclick="fetchBookings()">🔄 Segarkan Data</button>
+        </header>
 
-    <div class="stats-grid">
-        <div class="stat-card stat-pending">
-            <span class="label">Menunggu</span>
-            <span class="value" id="pending-count">0</span>
+        <div class="stats-grid">
+            <div class="stat-card" style="border-color: var(--warning);">
+                <small>MENUNGGU</small><h2 id="pending-count">0</h2>
+            </div>
+            <div class="stat-card" style="border-color: var(--success);">
+                <small>LULUS</small><h2 id="approved-count">0</h2>
+            </div>
+            <div class="stat-card">
+                <small>JUMLAH</small><h2 id="total-count">0</h2>
+            </div>
         </div>
-        <div class="stat-card stat-approved">
-            <span class="label">Lulus</span>
-            <span class="value" id="approved-count">0</span>
-        </div>
-        <div class="stat-card stat-total">
-            <span class="label">Jumlah Keseluruhan</span>
-            <span class="value" id="total-count">0</span>
+
+        <div class="table-container">
+            <div style="padding: 20px; font-weight: 800; border-bottom: 1px solid #f1f5f9;">Senarai Permohonan</div>
+            <div style="overflow-x: auto;">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Pemohon</th>
+                            <th>Studio</th>
+                            <th>Tarikh/Masa</th>
+                            <th>Status</th>
+                            <th>Tindakan</th>
+                        </tr>
+                    </thead>
+                    <tbody id="adminTableBody">
+                        </tbody>
+                </table>
+            </div>
         </div>
     </div>
 
-    <div class="table-container">
-        <div class="table-header">
-            <h3>Senarai Permohonan Studio</h3>
+    <div id="laporan" class="tab-content">
+        <header class="top-header">
+            <h1>Laporan & Analitik</h1>
+        </header>
+        <div class="stats-grid">
+            <div class="stat-card">
+                <small>PENGGUNA AKTIF</small>
+                <h2>124</h2>
+            </div>
+            <div class="stat-card">
+                <small>STUDIO POPULAR</small>
+                <h2 style="font-size: 1.2rem; margin-top: 10px;">STUDIO MUZIK</h2>
+            </div>
         </div>
-        <div class="table-wrapper">
-            <table>
-                <thead>
-                    <tr>
-                        <th>Maklumat Pemohon</th>
-                        <th>Studio & Lokasi</th>
-                        <th>Tarikh & Masa</th>
-                        <th>Status</th>
-                        <th>Tindakan</th>
-                    </tr>
-                </thead>
-                <tbody id="adminTableBody">
-                    <tr>
-                        <td colspan="5" style="text-align:center; padding:100px; color: #94a3b8;">
-                            <div class="dot-pulse" style="margin: 0 auto 15px; background: var(--primary); width: 12px; height: 12px; border-radius: 50%;"></div>
-                            Memuatkan data tempahan...
-                        </td>
-                    </tr>
-                </tbody>
-            </table>
+        <div class="table-container" style="padding: 40px; text-align: center; color: #64748b;">
+            <p>Fungsi eksport PDF/Excel akan dikemaskini pada fasa seterusnya.</p>
         </div>
     </div>
+
+    <div id="konfigurasi" class="tab-content">
+        <header class="top-header">
+            <h1>Tetapan Sistem</h1>
+        </header>
+        <div class="table-container" style="padding: 30px;">
+            <form class="config-form">
+                <div class="form-group">
+                    <label>Nama Sistem</label>
+                    <input type="text" value="Pusat Budaya Studio (PBS) UMK">
+                </div>
+                <div class="form-group">
+                    <label>Waktu Operasi (Mula)</label>
+                    <input type="time" value="09:00">
+                </div>
+                <div class="form-group">
+                    <label>Waktu Operasi (Tamat)</label>
+                    <input type="time" value="23:00">
+                </div>
+                <button type="button" class="btn-refresh" style="width: fit-content;">Simpan Tetapan</button>
+            </form>
+        </div>
+    </div>
+
 </div>
 
 <script>
-    // Konfigurasi Supabase (Tetap)
     const supabaseUrl = 'https://lweolipmulciepadidvk.supabase.co';
     const supabaseKey = 'sb_publishable_V-12ORVq7uTmuKk9X8PPnQ_hcm_J2c2';
     const _supabase = supabase.createClient(supabaseUrl, supabaseKey);
 
-    async function fetchBookings() {
-        const { data, error } = await _supabase
-            .from('bookings')
-            .select('*')
-            .order('created_at', { ascending: false });
+    // FUNGSI TUKAR TAB
+    function switchTab(element, tabId) {
+        // Buang active dari semua nav-item
+        document.querySelectorAll('.nav-item').forEach(nav => nav.classList.remove('active'));
+        // Tambah active pada yang ditekan
+        element.classList.add('active');
 
-        if (error) {
-            console.error("Error fetching:", error);
-            return;
-        }
+        // Sembunyikan semua tab-content
+        document.querySelectorAll('.tab-content').forEach(tab => tab.classList.remove('active'));
+        // Tunjukkan tab yang dipilih
+        document.getElementById(tabId).classList.add('active');
+    }
+
+    // FUNGSI DATA (Sama seperti kod asal anda)
+    async function fetchBookings() {
+        const { data, error } = await _supabase.from('bookings').select('*').order('created_at', { ascending: false });
+        if (error) return;
         renderAdminTable(data);
         updateDashboardStats(data);
     }
@@ -388,65 +214,28 @@
     function renderAdminTable(bookings) {
         const tbody = document.getElementById('adminTableBody');
         tbody.innerHTML = '';
-
-        if (bookings.length === 0) {
-            tbody.innerHTML = '<tr><td colspan="5" style="text-align:center; padding:50px;">Tiada permohonan dijumpai.</td></tr>';
-            return;
-        }
-
         bookings.forEach(item => {
-            const row = document.createElement('tr');
             const statusKey = item.status.toLowerCase();
-            
-            row.innerHTML = `
-                <td>
-                    <div class="user-cell">
-                        <strong>${item.full_name}</strong>
-                        <small>${item.student_staff_id} • ${item.category}</small>
-                    </div>
-                </td>
-                <td>
-                    <div class="user-cell">
-                        <strong>${item.studio_name}</strong>
-                        <small>📍 Kampus ${item.campus.toUpperCase()}</small>
-                    </div>
-                </td>
-                <td>
-                    <div class="user-cell">
-                        <strong>${formatDate(item.start_date)}</strong>
-                        <small>⏰ ${item.start_time} - ${item.end_time}</small>
-                    </div>
-                </td>
-                <td>
-                    <span class="status-badge badge-${statusKey}">
-                        <div class="dot ${statusKey === 'menunggu' ? 'dot-pulse' : ''}"></div>
-                        ${item.status}
-                    </span>
-                </td>
-                <td>
-                    <div class="btn-group">
-                        ${item.status === 'Menunggu' ? `
-                            <button class="btn-icon btn-approve" title="Luluskan" onclick="changeStatus(${item.id}, 'Lulus')">✓</button>
-                            <button class="btn-icon btn-reject" title="Tolak" onclick="changeStatus(${item.id}, 'Tolak')">✕</button>
-                        ` : '<span style="font-size:0.65rem; color:#cbd5e1; font-weight:800; letter-spacing:1px;">SELESAI</span>'}
-                        <button class="btn-icon btn-wa" title="WhatsApp" onclick="window.open('https://wa.me/6${item.phone.replace(/[^0-9]/g, '')}')">💬</button>
-                    </div>
-                </td>
+            const row = `
+                <tr>
+                    <td><strong>${item.full_name}</strong><br><small>${item.student_staff_id}</small></td>
+                    <td><strong>${item.studio_name}</strong><br><small>Kampus ${item.campus}</small></td>
+                    <td>${item.start_date}<br><small>${item.start_time} - ${item.end_time}</small></td>
+                    <td><span class="status-badge badge-${statusKey}">${item.status}</span></td>
+                    <td>
+                        <button onclick="changeStatus(${item.id}, 'Lulus')" style="cursor:pointer">✅</button>
+                        <button onclick="window.open('https://wa.me/6${item.phone}')" style="cursor:pointer">💬</button>
+                    </td>
+                </tr>
             `;
-            tbody.appendChild(row);
+            tbody.innerHTML += row;
         });
     }
 
     async function changeStatus(id, newStatus) {
-        if (!confirm(`Tukarkan status kepada ${newStatus}?`)) return;
-
+        if (!confirm('Luluskan tempahan ini?')) return;
         const { error } = await _supabase.from('bookings').update({ status: newStatus }).eq('id', id);
-
-        if (error) {
-            alert("Ralat kemaskini: " + error.message);
-        } else {
-            fetchBookings();
-        }
+        if (!error) fetchBookings();
     }
 
     function updateDashboardStats(bookings) {
@@ -455,12 +244,6 @@
         document.getElementById('total-count').innerText = bookings.length;
     }
 
-    function formatDate(dateStr) {
-        const options = { day: 'numeric', month: 'short', year: 'numeric' };
-        return new Date(dateStr).toLocaleDateString('ms-MY', options);
-    }
-
-    // Jalankan fetch data pada permulaan
     fetchBookings();
 </script>
 </body>
